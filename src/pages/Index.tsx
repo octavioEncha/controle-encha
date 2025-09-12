@@ -17,18 +17,17 @@ const Index = () => {
   const { user, perfil, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading) {
-      if (user) {
-        if (!perfil) {
-          // Usuário logado mas sem perfil configurado
-          navigate('/setup');
-        } else {
-          // Usuário logado com perfil configurado
-          navigate('/dashboard');
-        }
+    if (!loading && user) {
+      // Se o usuário está logado, verificar se tem perfil
+      if (perfil) {
+        // Se tem perfil, vai direto para dashboard
+        navigate('/dashboard');
+      } else {
+        // Se não tem perfil, vai para setup (só na primeira vez)
+        navigate('/setup');
       }
     }
-  }, [user, perfil, loading, navigate]);
+  }, [user, loading, perfil, navigate]);
 
   if (loading) {
     return (

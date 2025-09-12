@@ -5,9 +5,12 @@ export const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const formatDate = (date: string | Date): string => {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('pt-BR');
+export const formatDateForInput = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('pt-BR');
 };
 
 export const formatDateTime = (date: string | Date): string => {
