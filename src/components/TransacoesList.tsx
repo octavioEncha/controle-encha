@@ -31,9 +31,9 @@ export default function TransacoesList() {
   const [loading, setLoading] = useState(false);
   const [filtros, setFiltros] = useState({
     busca: '',
-    categoria_id: '',
-    tipo_transacao: '',
-    status: '',
+    categoria_id: 'todas',
+    tipo_transacao: 'todos',
+    status: 'todos',
     data_inicio: '',
     data_fim: '',
   });
@@ -45,7 +45,15 @@ export default function TransacoesList() {
     try {
       setLoading(true);
       const filtrosLimpos = Object.fromEntries(
-        Object.entries(filtros).filter(([_, value]) => value !== '')
+        Object.entries(filtros).filter(([key, value]) => {
+          // Manter apenas filtros com valores válidos
+          if (key === 'busca' && value !== '') return true;
+          if (key === 'categoria_id' && value !== 'todas' && value !== '') return true;
+          if (key === 'tipo_transacao' && value !== 'todos' && value !== '') return true;
+          if (key === 'status' && value !== 'todos' && value !== '') return true;
+          if ((key === 'data_inicio' || key === 'data_fim') && value !== '') return true;
+          return false;
+        })
       );
       const data = await getTransacoes(filtrosLimpos);
       setTransacoes(data);
@@ -107,9 +115,9 @@ export default function TransacoesList() {
   const limparFiltros = () => {
     setFiltros({
       busca: '',
-      categoria_id: '',
-      tipo_transacao: '',
-      status: '',
+      categoria_id: 'todas',
+      tipo_transacao: 'todos',
+      status: 'todos',
       data_inicio: '',
       data_fim: '',
     });
@@ -181,7 +189,7 @@ export default function TransacoesList() {
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="todas">Todas</SelectItem>
                   {categorias.map((categoria) => (
                     <SelectItem key={categoria.id} value={categoria.id}>
                       {categoria.nome_categoria}
@@ -201,7 +209,7 @@ export default function TransacoesList() {
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
                   <SelectItem value="receita">Receita</SelectItem>
                   <SelectItem value="despesa">Despesa</SelectItem>
                 </SelectContent>
@@ -218,7 +226,7 @@ export default function TransacoesList() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
                   <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="pago">Pago</SelectItem>
                   <SelectItem value="cancelado">Cancelado</SelectItem>

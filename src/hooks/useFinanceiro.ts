@@ -134,7 +134,7 @@ export function useFinanceiro() {
       
       if (error) throw error;
       
-      return (data as Transacao[]) || [];
+      return data as any[] as Transacao[];
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
       return [];
