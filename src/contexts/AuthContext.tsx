@@ -49,10 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Buscar perfil do usuário
-          setTimeout(() => {
-            fetchPerfil(session.user.id);
-          }, 0);
+          // Buscar perfil do usuário e só então finalizar o loading
+          await fetchPerfil(session.user.id);
         } else {
           setPerfil(null);
         }
@@ -62,12 +60,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Verificar sessão existente
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchPerfil(session.user.id);
+        await fetchPerfil(session.user.id);
       }
       
       setLoading(false);
