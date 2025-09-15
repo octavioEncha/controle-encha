@@ -197,6 +197,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_transacoes_categoria"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_transacoes_conta"
+            columns: ["conta_id"]
+            isOneToOne: false
+            referencedRelation: "contas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transacoes_categoria_id_fkey"
             columns: ["categoria_id"]
             isOneToOne: false
@@ -251,6 +265,20 @@ export type Database = {
           valor?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_transferencias_conta_destino"
+            columns: ["conta_destino_id"]
+            isOneToOne: false
+            referencedRelation: "contas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_transferencias_conta_origem"
+            columns: ["conta_origem_id"]
+            isOneToOne: false
+            referencedRelation: "contas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transferencias_conta_destino_id_fkey"
             columns: ["conta_destino_id"]
