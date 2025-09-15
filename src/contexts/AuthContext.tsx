@@ -28,29 +28,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('perfis_usuario')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Erro ao buscar perfil:', error);
-        return;
       }
       
-      setPerfil(data as PerfilUsuario);
+      setPerfil((data as PerfilUsuario) || null);
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);
+      setPerfil(null);
     }
   };
 
   useEffect(() => {
     // Configurar listener de mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Buscar perfil do usuário e só então finalizar o loading
-          await fetchPerfil(session.user.id);
+          // Deferir chamada ao Supabase para evitar deadlocks
+          setTimeout(() => {
+            fetchPerfil(session.user!.id);
+          }, 0);
         } else {
           setPerfil(null);
         }
@@ -60,12 +62,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Verificar sessão existente
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchPerfil(session.user.id);
+        setTimeout(() => fetchPerfil(session.user!.id), 0);
       }
       
       setLoading(false);
