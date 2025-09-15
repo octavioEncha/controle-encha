@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchPerfil = async (userId: string) => {
     try {
+      console.log('Buscando perfil para usuário:', userId);
       const { data, error } = await supabase
         .from('perfis_usuario')
         .select('*')
@@ -34,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Erro ao buscar perfil:', error);
       }
       
+      console.log('Perfil encontrado:', data);
       setPerfil((data as PerfilUsuario) || null);
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);

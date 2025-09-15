@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -26,6 +27,7 @@ interface LayoutProps {
 export default function Layout({ children, activeTab, onTabChange }: LayoutProps) {
   const { user, perfil, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -35,6 +37,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
       });
+      navigate('/');
     } catch (error) {
       toast({
         title: "Erro",
