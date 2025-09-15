@@ -94,14 +94,10 @@ export function useFinanceiro() {
       
       let query = supabase
         .from('transacoes')
-        .select(`
-          *,
-          categoria:categorias(*),
-          conta:contas(*)
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('data_vencimento', { ascending: false });
-        
+      
       if (filtros?.categoria_id) {
         query = query.eq('categoria_id', filtros.categoria_id);
       }
@@ -130,11 +126,44 @@ export function useFinanceiro() {
         query = query.range(filtros.offset, filtros.offset + (filtros.limite || 10) - 1);
       }
       
-      const { data, error } = await query;
+      // Filtro de busca por descrição (quando informado)
+      // Observação: o componente de filtros envia "busca" em alguns fluxos
+      // mesmo que este hook não tipifique explicitamente.
+      // @ts-expect-error filtro opcional não tipado
+      if (filtros?.busca && typeof filtros.busca === 'string' && filtros.busca.trim() !== '') {
+        // ILIKE para busca case-insensitive
+        // @ts-expect-error method exists at runtime
+        query = query.ilike('descricao', `%${filtros.busca.trim()}%`);
+      }
       
+      const { data, error } = await query;
       if (error) throw error;
       
-      return data as any[] as Transacao[];
+      // Buscar categorias e contas para enriquecer as transações
+      const [{ data: categorias }, { data: contas }] = await Promise.all([
+        supabase
+          .from('categorias')
+          .select('*')
+          .eq('user_id', user.id),
+        supabase
+          .from('contas')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('ativa', true),
+      ]);
+      
+      const mapaCategorias = new Map<string, Categoria>();
+      (categorias || []).forEach((c: any) => mapaCategorias.set(c.id, c as Categoria));
+      const mapaContas = new Map<string, Conta>();
+      (contas || []).forEach((c: any) => mapaContas.set(c.id, c as Conta));
+      
+      const enriquecidas = (data || []).map((t: any) => ({
+        ...t,
+        categoria: mapaCategorias.get(t.categoria_id) || undefined,
+        conta: mapaContas.get(t.conta_id) || undefined,
+      })) as Transacao[];
+      
+      return enriquecidas;
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
       return [];
