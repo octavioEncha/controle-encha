@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
   Menu,
   Home,
@@ -124,7 +125,11 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Tema</span>
+          <ThemeToggle />
+        </div>
         <Button
           variant="ghost"
           className="w-full justify-start text-danger hover:text-danger hover:bg-danger/10"
@@ -165,6 +170,10 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
               </div>
               <span className="font-bold">ENCHA</span>
             </div>
+          </div>
+          
+          <div className="flex items-center">
+            <ThemeToggle />
           </div>
         </div>
       </div>
