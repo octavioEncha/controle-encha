@@ -17,20 +17,21 @@ const Index = () => {
   const { user, perfil, loading } = useAuth();
 
   useEffect(() => {
-    console.log('Index - Estado atual:', { user: !!user, perfil: !!perfil, loading });
     if (!loading && user) {
-      // Se o usuário está logado, verificar se tem perfil
-      if (perfil) {
-        // Se tem perfil, vai direto para dashboard
-        console.log('Redirecionando para dashboard - perfil encontrado');
-        navigate('/dashboard');
-      } else {
-        // Se não tem perfil, vai para setup (só na primeira vez)
-        console.log('Redirecionando para setup - perfil não encontrado');
-        navigate('/setup');
-      }
+      // Aguardar um pouco para o perfil carregar se o usuário acabou de logar
+      const timer = setTimeout(() => {
+        if (perfil) {
+          // Se tem perfil, vai direto para dashboard
+          navigate('/dashboard');
+        } else {
+          // Se não tem perfil, vai para setup (só na primeira vez)
+          navigate('/setup');
+        }
+      }, 200);
+      
+      return () => clearTimeout(timer);
     }
-  }, [user, loading, perfil, navigate]);
+  }, [user, perfil, loading, navigate]);
 
   if (loading) {
     return (

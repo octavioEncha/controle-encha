@@ -24,19 +24,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchPerfil = async (userId: string) => {
     try {
-      console.log('Buscando perfil para usuário:', userId);
       const { data, error } = await supabase
         .from('perfis_usuario')
         .select('*')
         .eq('user_id', userId)
-        .maybeSingle();
+        .single();
       
       if (error) {
-        console.error('Erro ao buscar perfil:', error);
+        if (error.code !== 'PGRST116') { // PGRST116 é "não encontrado"
+          console.error('Erro inesperado:', error);
+        }
+        setPerfil(null);
+        return;
       }
       
-      console.log('Perfil encontrado:', data);
-      setPerfil((data as PerfilUsuario) || null);
+      setPerfil(data as PerfilUsuario);
     } catch (err) {
       console.error('Erro ao buscar perfil:', err);
       setPerfil(null);
