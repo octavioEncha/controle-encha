@@ -7,7 +7,7 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.react.rule=Host(`https://teste.vipsolution.com.br/`)"
+      - "traefik.http.routers.react.rule=Host(`teste.vipsolution.com.br`)"
       - "traefik.http.routers.react.entrypoints=websecure"
       - "traefik.http.routers.react.tls.certresolver=myresolver"
     networks:
@@ -16,3 +16,4 @@ services:
 networks:
   enchanet:
     external: true
+
